@@ -1,0 +1,42 @@
+function add4KMovies() { let movies4K = [];
+
+async function fetchMovies() {
+    try {
+        let response = await fetch('https://api.example.com/4k-movies');
+        let data = await response.json();
+        movies4K = data.movies.map(movie => ({
+            title: movie.title,
+            poster: movie.poster,
+            url: movie.stream_url
+        }));
+    } catch (error) {
+        console.error('Ошибка загрузки фильмов 4K:', error);
+    }
+}
+
+Lampa.Listener.follow('app', async (e) => {
+    if (e.type === 'ready') {
+        await fetchMovies();
+
+        let menuItem = {
+            title: 'Фильмы 4K',
+            onClick: function () {
+                Lampa.Activity.push({
+                    url: '',
+                    title: 'Фильмы 4K',
+                    component: 'category',
+                    data: {
+                        items: movies4K,
+                        source: '4KMovies'
+                    }
+                });
+            }
+        };
+        Lampa.Menu.add(menuItem);
+    }
+});
+
+}
+
+add4KMovies();
+
